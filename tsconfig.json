@@ -1,0 +1,24 @@
+{
+  "compilerOptions": 
+  {    
+    /* Base Options: */
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    // "allowJs": true,
+    // "checkJs": false,
+    "resolveJsonModule": true,
+    "moduleDetection": "force",
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+    "target": "ES2022",
+
+    /* Strictness */
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+  }
+}
