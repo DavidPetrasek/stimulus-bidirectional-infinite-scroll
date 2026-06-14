@@ -119,6 +119,9 @@ Dispatched natively upon successful injection of new elements into the target sc
 * **`event.target`**: The container in which new elements were inserted.
 * **`event.detail.newElems`**: An array containing the newly inserted elements.
 
+---
+**How to listen to events**
+
 There are two ways to listen inside `my-infinite-scroll` or any other controller:
 
 #### First approach:
