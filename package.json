@@ -1,10 +1,14 @@
 {
   "name": "@dpsys/stimulus-bidirectional-infinite-scroll",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "keywords": [
     "infinite-scroll",
-    "bidirectional"
+    "infinite-scrolling",
+    "bidirectional",
+    "stimulus-js",
+    "overlay-scrollbars",
+    "auto-fill"
   ],
   "author": "David Petrásek",
   "license": "ISC",
