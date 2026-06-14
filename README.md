@@ -9,9 +9,9 @@ Supports CJS and ESM.
 ## Features
 
 - **Up/Down/Left/Right**
-- **Triggerless**
+- **Triggerless**: Initial items or trigger element are not required
 - **Auto fill**
-- **Custom Scroll Viewports**: Seamless integration with third-party wrappers like `OverlayScrollbars`.
+- **Custom Scroll Viewports**: Seamless integration with third-party wrappers like `OverlayScrollbars`
 
 
 ## Installation
