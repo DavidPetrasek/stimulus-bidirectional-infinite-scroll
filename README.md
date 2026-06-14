@@ -1,79 +1,159 @@
-[![NPM Downloads](https://img.shields.io/npm/dm/%40dpsys%2Faxios-loader)](https://www.npmjs.com/package/@dpsys/axios-loader)
+[![NPM Downloads](https://img.shields.io/npm/dm/%40dpsys%2Fstimulus-bidirectional-infinite-scroll)](https://www.npmjs.com/package/@dpsys/stimulus-bidirectional-infinite-scroll)
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](https://www.typescriptlang.org/)
 [![ISC License](https://img.shields.io/badge/License-ISC-blue.svg)](https://opensource.org/licenses/ISC)
 
-# Axios Loader
-
-Add custom spinners, popups, or loading indicators to improve user experience during Axios requests.
+# Stimulus Bidirectional Infinite Scroll
 
 Supports CJS and ESM.
 
 ## Features
 
-- **Loader Management** - Automatically show/hide custom loaders
-- **Page Interaction Control** - Disable UI interactions during requests
-- **Factory Pattern Configuration**
+- **Up/Down/Left/Right**
+- **Triggerless**
+- **Auto fill**
+- **Custom Scroll Viewports**: Seamless integration with third-party wrappers like `OverlayScrollbars`.
+
 
 ## Installation
-
-```bash
-npm i @dpsys/axios-loader
+1. Run: 
+``` bash
+npm i @dpsys/stimulus-bidirectional-infinite-scroll
+```
+2. Register this controller in your bootstrap file:
+``` js
+import BidirectionalInfiniteScroll from "@dpsys/stimulus-bidirectional-infinite-scroll";
+...
+stimulusApp.register('bidirectional-infinite-scroll', BidirectionalInfiniteScroll);
 ```
 
 ## Example Usage
-**1. Make (or update existing) Axios instance:**
-```js
-import { AxiosLoader } from '@dpsys/axios-loader';
+**1. Basic**
+- This example uses Symfony UX StimulusBundle and the Fetch API. Use any other implementation of your choice.
 
-let axiosLoaderInstance = new AxiosLoader
-(
-	// Axios config or an existing Axios instance
-	{
-		baseURL: 'https://test.com',
-	},
-	// Loader config
-	{
-		loaderShowAfterMs: 300, 
-		loaderMessage: 'Loading ...'
-	}
-)
-.setLoaderCallbacks
-(
-	// showLoaderCallback
-    (requestID, loaderMessage) => console.log(`Showing loader ${requestID} with message: ${loaderMessage}`),
-	// hideLoaderCallback
-    (requestID) => console.log(`Hiding loader ${requestID}`)
-);
+``` js
+// .../controllers/my-infinite-scroll-controller.js
+import BidirectionalInfiniteController from '@dpsys/stimulus-bidirectional-infinite-scroll';
 
-export const axiosLoader = axiosLoaderInstance.getAxiosInstance();
-// export default axiosLoaderInstance.getAxiosInstance();
+export default class extends BidirectionalInfiniteController 
+{
+    async loadMoreCallback(formData)
+    {
+        const response = await fetch("https://example.org/load-more", 
+        {
+            method: "POST",
+            body: formData, // inherently contains the target 'page' parameter
+        });
+        return await response.text(); // Return raw HTML string containing elements
+    }
+}
 ```
 
-**2. Use it in your app**
-- Loader config can be overriden here
-```js
-import {axiosLoader} from '../lib/axios/default';
+``` twig
+<div {{ stimulus_controller('my-infinite-scroll', {'loadMoreDirection': 'down', 'nbPages': 10, 'autoFill': true}) }} >
+</div>
+```
 
-axiosLoader.post('/some-route', {data: 'foo'}, {loaderMessage: 'Different loader message...', disablePageInteraction: false});
-.then( async (response) =>
+**2. Custom Containers (e.g., OverlayScrollbars)**
+If your scroll layout runs inside a custom structural plugin wrapper rather than the controller element itself, flag `customScrollContainer` to handle initialization manually.
+
+``` js
+// .../controllers/my-infinite-scroll-controller.js
+import BidirectionalInfiniteController from '@dpsys/stimulus-bidirectional-infinite-scroll';
+import { OverlayScrollbars } from 'overlayscrollbars';
+
+export default class extends BidirectionalInfiniteController 
 {
-	...
-});
+    connect() 
+    {
+        super.connect();
+        
+        OverlayScrollbars(this.element, {},
+        {
+            initialized: (os) =>
+            {
+                // Point the controller to the actual overflowing layout viewport element
+                this.setScrollContainer(os.elements().viewport);
+                this.enable();
+            }
+        });
+    }
+
+    ...
+}
+```
+
+``` twig
+<div {{ stimulus_controller('my-infinite-scroll', {'loadMoreDirection': 'down', 'nbPages': 10, customScrollContainer': true}) }} >
+</div>
 ```
 
 ## Config
+Configure the controller configuration using standard Stimulus Data Values:
 
-| Option                   | Type    | Default           | Description                                                                   |
-|--------------------------|---------|-------------------|-------------------------------------------------------------------------------|
-| `loaderShow`             | boolean | `false`           | Whether to show the loader. Is automatically enabled after setting callbacks via `setLoaderCallbacks`. |
-| `loaderShowAfterMs`      | number  | `200`             | Delay in milliseconds before the loader appears.                            |
-| `loaderMessage`          | string  | `Please wait ...` | Message displayed in the loader.                                             |
-| `loaderNeverHide`        | boolean | `false`           | If true, loader is never removed after request has finished. |
-| `disablePageInteraction` | boolean | `true`            | Whether to prevent user page interaction during each request.                |
+| Option | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `currPage` | Number | `1` | The starting page index which is incremented/decremented automatically when new content is loaded for insertion. |
+| `nbPages` | Number | *Required* | The absolute upper limit boundary of available pages. Loding more content is halted when this limit is reached. |
+| `triggerDistanceEm` | Number | `10` | Lookahead threshold margin calculated in `em` units relative to the container boundaries before firing `loadMoreCallback`. |
+| `loadMoreDirection` | String | `'down'` | Permitted options: `'up'`, `'down'`, `'left'`, `'right'`. |
+| `customScrollContainer` | Boolean | `false` | If set to `true`, halts automatic initialization, allowing to set the scroll container later after `connect()` was fired. |
+| `autoFill` | Boolean | `false` | When true, automatically fills the container with new content until its scrollable. |
+| `insertTargetQuerySelector` | String | `null` | CSS query selector of child element relative to the default scroll container. If specified, the new content is inserted here instead of the default (parent) scroll container. |
 
 ## Callbacks
-- `showLoaderCallback(requestID: number, message: string)`: Implement this callback to show your loader.
-- `hideLoaderCallback(requestID: number)`: Implement this callback to hide your loader.
+
+### `loadMoreCallback(formData: FormData): Promise<string>`
+
+The primary abstract method executing async interactions. This **must** be implemented within your extending subclass.
+
+* **Arguments:** An instance of `FormData` replicating any previously bound application data and carrying the updated `page` value.
+* **Expected Return:** A `Promise` resolving to an HTML string slice containing the markup of your new elements.
+
+
+## Events
+
+### `elements-added`
+
+Dispatched natively upon successful injection of new elements into the target scroll container.
+
+* **`event.target`**: The container in which new elements were inserted.
+* **`event.detail.newElems`**: An array containing the newly inserted elements.
+
+There are two ways to listen inside `my-infinite-scroll` or any other controller:
+
+#### First approach:
+```js
+this.element.addEventListener('my-infinite-scroll:elements-added', (e) => 
+{
+    console.log("Newly inserted elements:", e.detail.newElems);
+});
+```
+
+#### Second approach:
+``` twig
+<div {{ stimulus_controller('some-other') }} 
+{{ stimulus_action(
+    'some-other', 
+    'elementsAddded', 
+    'my-infinite-scroll:elements-added'
+) }}>
+</div>
+```
+Then inside `some-other` controller implement method:
+```js
+elementsAddded(e)
+{
+    console.log("Newly inserted elements:", e.detail.newElems);
+}
+```
+
 
 ## Methods
-- `setLoaderCallbacks(showLoaderCallback, hideLoaderCallback)`: see Callbacks section
+The following public methods are available directly on your extended controller instance:
+
+* **`enable(): Promise<void>`** 
+* **`disable(): void`**
+* **`setBaseFormData(formData: FormData): void`**
+* **`setScrollContainer(scrollContainer: HTMLElement): void`**
+* **`getScrollContainer(): HTMLElement | null`**
+* **`autoFill(): Promise<void>`**

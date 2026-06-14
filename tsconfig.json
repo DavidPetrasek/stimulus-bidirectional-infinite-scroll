@@ -12,6 +12,7 @@
     "module": "NodeNext",
     "moduleResolution": "nodenext",
     "target": "ES2022",
+    "ignoreDeprecations": "6.0",
 
     /* Strictness */
     "strict": true,
