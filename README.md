@@ -9,7 +9,7 @@ Supports CJS and ESM.
 ## Features
 
 - **Up/Down/Left/Right**
-- **Triggerless**: Initial items or trigger element are not required
+- **Triggerless**: No initial items or trigger element is required
 - **Auto fill**
 - **Custom Scroll Viewports**: Seamless integration with third-party wrappers like `OverlayScrollbars`
 
@@ -28,7 +28,8 @@ stimulusApp.register('bidirectional-infinite-scroll', BidirectionalInfiniteScrol
 
 ## Example Usage
 **1. Basic**
-- This example uses Symfony UX StimulusBundle and the Fetch API. Use any other implementation of your choice.
+
+This example uses Symfony UX StimulusBundle and the Fetch API. Use any other implementation of your choice.
 
 ``` js
 // .../controllers/my-infinite-scroll-controller.js
@@ -54,6 +55,7 @@ export default class extends BidirectionalInfiniteController
 ```
 
 **2. Custom Containers (e.g., OverlayScrollbars)**
+
 If your scroll layout runs inside a custom structural plugin wrapper rather than the controller element itself, flag `customScrollContainer` to handle initialization manually.
 
 ``` js
@@ -93,7 +95,7 @@ Configure the controller configuration using standard Stimulus Data Values:
 | Option | Type | Default | Description |
 | :--- | :--- | :--- | :--- |
 | `currPage` | Number | `1` | The starting page index which is incremented/decremented automatically when new content is loaded for insertion. |
-| `nbPages` | Number | *Required* | The absolute upper limit boundary of available pages. Loding more content is halted when this limit is reached. |
+| `nbPages` | Number | *Required* | Number of available pages. Loding more content is halted when this limit is reached. |
 | `triggerDistanceEm` | Number | `10` | Lookahead threshold margin calculated in `em` units relative to the container boundaries before firing `loadMoreCallback`. |
 | `loadMoreDirection` | String | `'down'` | Permitted options: `'up'`, `'down'`, `'left'`, `'right'`. |
 | `customScrollContainer` | Boolean | `false` | If set to `true`, halts automatic initialization, allowing to set the scroll container later after `connect()` was fired. |
@@ -154,9 +156,9 @@ elementsAddded(e)
 ## Methods
 The following public methods are available directly on your extended controller instance:
 
-* **`enable(): Promise<void>`** 
-* **`disable(): void`**
-* **`setBaseFormData(formData: FormData): void`**
+* **`enable(): Promise<void>`**: Enables all functionality
+* **`disable(): void`**: Disables all functionality
+* **`setBaseFormData(formData: FormData): void`**: This `FormData` is later available inside the `loadMoreCallback` with the updated `page` value
 * **`setScrollContainer(scrollContainer: HTMLElement): void`**
 * **`getScrollContainer(): HTMLElement | null`**
-* **`autoFill(): Promise<void>`**
+* **`autoFill(): Promise<void>`**: Performs auto filling of the scroll container
