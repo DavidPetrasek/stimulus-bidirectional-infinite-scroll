@@ -1,7 +1,7 @@
 {
   "name": "@dpsys/stimulus-bidirectional-infinite-scroll",
-  "version": "1.0.2",
-  "description": "",
+  "version": "1.0.3",
+  "description": "A Stimulus controller for bidirectional infinite scrolling.",
   "keywords": [
     "infinite-scroll",
     "infinite-scrolling",
