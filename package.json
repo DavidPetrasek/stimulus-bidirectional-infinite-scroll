@@ -1,6 +1,6 @@
 {
   "name": "@dpsys/stimulus-bidirectional-infinite-scroll",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A Stimulus controller for bidirectional infinite scrolling.",
   "keywords": [
     "infinite-scroll",
@@ -37,14 +37,14 @@
     "build": "tsup"
   },
   "devDependencies": {
-    "@vitest/ui": "^4.1.8",
-    "jsdom": "^29.1.1",
+    "@vitest/ui": "^4.1.11",
+    "jsdom": "^30.0.1",
     "tsup": "^8.5.1",
     "typescript": "^6.0.3",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.11"
   },
   "dependencies": {
-    "@dpsys/js-utils": "^2.1.3",
+    "@dpsys/js-utils": "^2.2.1",
     "@hotwired/stimulus": "^3.2.2"
   }
 }
